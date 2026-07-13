@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness Plan Creator</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card-bg: #ffffff;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --border: #d1d5db;
+    --radius: 12px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2ff, #f4f6f8);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    padding: 24px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 420px;
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .card h1 {
+    font-size: 1.5rem;
+    margin: 0 0 4px;
+  }
+
+  .card p.subtitle {
+    margin: 0 0 24px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: var(--text);
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 36px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+
+  button:hover {
+    background: var(--primary-hover);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  .saved-section {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .saved-section h2 {
+    font-size: 1rem;
+    margin: 0 0 12px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 9px 12px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+
+  .saved-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .group-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-top: 12px;
+  }
+
+  .group-heading:first-child {
+    margin-top: 0;
+  }
+
+  .saved-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .edit-btn,
+  .remove-btn {
+    width: auto;
+    margin: 0;
+    padding: 6px 10px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .edit-btn:hover {
+    background: #e0e7ff;
+    color: var(--primary);
+    border-color: #c7d2fe;
+  }
+
+  .remove-btn:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+
+  .cancel-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  .cancel-btn:hover {
+    background: var(--bg);
+  }
+
+  .empty-message {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Build Your Fitness Plan</h1>
+    <p class="subtitle">Answer a few questions to generate a personalized workout.</p>
+
+    <form id="fitness-form">
+      <div class="field">
+        <label for="goal">Workout Goal</label>
+        <select id="goal" name="goal" required>
+          <option value="" disabled selected>Select a goal</option>
+          <option value="fat-loss">Fat loss</option>
+          <option value="muscle-gain">Muscle gain</option>
+          <option value="strength">Strength</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="experience">Experience Level</label>
+        <select id="experience" name="experience" required>
+          <option value="" disabled selected>Select your level</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="days">Days per Week</label>
+        <select id="days" name="days" required>
+          <option value="" disabled selected>Select days</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="equipment">Available Equipment</label>
+        <select id="equipment" name="equipment" required>
+          <option value="" disabled selected>Select equipment</option>
+          <option value="full-gym">Full gym</option>
+          <option value="home-weights">Home weights</option>
+          <option value="no-equipment">No equipment</option>
+        </select>
+      </div>
+
+      <button type="submit" id="submit-btn">Create Workout</button>
+      <button type="button" id="cancel-edit-btn" class="cancel-btn" hidden>Cancel Edit</button>
+    </form>
+
+    <div class="saved-section">
+      <h2>Saved Workouts</h2>
+      <input type="text" id="search-input" class="search-input" placeholder="Search saved workouts...">
+      <ul id="saved-list" class="saved-list"></ul>
+      <p id="empty-message" class="empty-message">No saved workouts yet.</p>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "fitness-tracker-bookmarks";
+
+    const LABELS = {
+      goal: { "fat-loss": "Fat loss", "muscle-gain": "Muscle gain", strength: "Strength" },
+      experience: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
+      equipment: { "full-gym": "Full gym", "home-weights": "Home weights", "no-equipment": "No equipment" }
+    };
+
+    const form = document.getElementById("fitness-form");
+    const savedList = document.getElementById("saved-list");
+    const emptyMessage = document.getElementById("empty-message");
+    const searchInput = document.getElementById("search-input");
+    const submitBtn = document.getElementById("submit-btn");
+    const cancelEditBtn = document.getElementById("cancel-edit-btn");
+
+    let editingId = null;
+
+    function enterEditMode(bookmark) {
+      editingId = bookmark.id;
+      form.goal.value = bookmark.goal;
+      form.experience.value = bookmark.experience;
+      form.days.value = bookmark.days;
+      form.equipment.value = bookmark.equipment;
+      submitBtn.textContent = "Update Workout";
+      cancelEditBtn.hidden = false;
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function exitEditMode() {
+      editingId = null;
+      submitBtn.textContent = "Create Workout";
+      cancelEditBtn.hidden = true;
+      form.reset();
+    }
+
+    function bookmarkText(bookmark) {
+      return `${LABELS.goal[bookmark.goal]} ${LABELS.experience[bookmark.experience]} ${bookmark.days}x/week ${LABELS.equipment[bookmark.equipment]}`.toLowerCase();
+    }
+
+    function getBookmarks() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveBookmarks(bookmarks) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+    }
+
+    function renderBookmarks() {
+      const bookmarks = getBookmarks();
+      const term = searchInput.value.trim().toLowerCase();
+      const filtered = term
+        ? bookmarks.filter((bookmark) => bookmarkText(bookmark).includes(term))
+        : bookmarks;
+
+      savedList.innerHTML = "";
+
+      if (!bookmarks.length) {
+        emptyMessage.textContent = "No saved workouts yet.";
+        emptyMessage.style.display = "block";
+      } else if (!filtered.length) {
+        emptyMessage.textContent = "No workouts match your search.";
+        emptyMessage.style.display = "block";
+      } else {
+        emptyMessage.style.display = "none";
+      }
+
+      const groups = {};
+      filtered.forEach((bookmark) => {
+        (groups[bookmark.goal] ||= []).push(bookmark);
+      });
+
+      Object.keys(LABELS.goal)
+        .filter((goal) => groups[goal])
+        .forEach((goal) => {
+          const heading = document.createElement("li");
+          heading.className = "group-heading";
+          heading.textContent = LABELS.goal[goal];
+          savedList.appendChild(heading);
+
+          groups[goal].forEach((bookmark) => {
+            const li = document.createElement("li");
+            li.className = "saved-item";
+
+            const text = document.createElement("span");
+            text.textContent = `${LABELS.experience[bookmark.experience]} · ${bookmark.days}x/week · ${LABELS.equipment[bookmark.equipment]}`;
+
+            const actions = document.createElement("div");
+            actions.className = "item-actions";
+
+            const editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.className = "edit-btn";
+            editBtn.textContent = "Edit";
+            editBtn.addEventListener("click", () => enterEditMode(bookmark));
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "remove-btn";
+            removeBtn.textContent = "Remove";
+            removeBtn.addEventListener("click", () => {
+              if (!confirm("Remove this saved workout?")) return;
+              if (editingId === bookmark.id) exitEditMode();
+              const remaining = getBookmarks().filter((b) => b.id !== bookmark.id);
+              saveBookmarks(remaining);
+              renderBookmarks();
+            });
+
+            actions.appendChild(editBtn);
+            actions.appendChild(removeBtn);
+
+            li.appendChild(text);
+            li.appendChild(actions);
+            savedList.appendChild(li);
+          });
+        });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const values = {
+        goal: form.goal.value,
+        experience: form.experience.value,
+        days: form.days.value,
+        equipment: form.equipment.value
+      };
+
+      const bookmarks = getBookmarks();
+
+      if (editingId) {
+        const target = bookmarks.find((b) => b.id === editingId);
+        if (target) Object.assign(target, values);
+      } else {
+        bookmarks.push({ id: Date.now().toString(), ...values });
+      }
+
+      saveBookmarks(bookmarks);
+      exitEditMode();
+      renderBookmarks();
+    });
+
+    cancelEditBtn.addEventListener("click", exitEditMode);
+
+    searchInput.addEventListener("input", renderBookmarks);
+
+    renderBookmarks();
+  </script>
+</body>
+</html>
