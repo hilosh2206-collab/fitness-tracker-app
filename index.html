@@ -242,6 +242,12 @@
     font-size: 0.85rem;
     margin: 0;
   }
+
+  .form-error {
+    color: #b91c1c;
+    font-size: 0.85rem;
+    margin: -8px 0 14px;
+  }
 </style>
 </head>
 <body>
@@ -268,7 +274,9 @@
       </svg>
     </div>
 
-    <form id="fitness-form">
+    <form id="fitness-form" novalidate>
+      <p id="form-error" class="form-error" role="alert" hidden>Please fill in all fields before submitting.</p>
+
       <div class="field">
         <label for="goal">Workout Goal</label>
         <select id="goal" name="goal" required>
@@ -335,6 +343,7 @@
     };
 
     const form = document.getElementById("fitness-form");
+    const formError = document.getElementById("form-error");
     const savedList = document.getElementById("saved-list");
     const emptyMessage = document.getElementById("empty-message");
     const searchInput = document.getElementById("search-input");
@@ -358,6 +367,7 @@
       editingId = null;
       submitBtn.textContent = "Create Workout";
       cancelEditBtn.hidden = true;
+      formError.hidden = true;
       form.reset();
     }
 
@@ -450,6 +460,12 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
+      if (!form.checkValidity()) {
+        formError.hidden = false;
+        return;
+      }
+      formError.hidden = true;
+
       const values = {
         goal: form.goal.value,
         experience: form.experience.value,
@@ -472,6 +488,10 @@
     });
 
     cancelEditBtn.addEventListener("click", exitEditMode);
+
+    form.addEventListener("change", () => {
+      formError.hidden = true;
+    });
 
     searchInput.addEventListener("input", renderBookmarks);
 
