@@ -1,6 +1,8 @@
 ---
 name: code-reviewer
 description: Review changes in this fitness-tracker-app repo for correctness, security, and consistency with its vanilla HTML/CSS/JS conventions. Use before committing or when asked to review code.
+isolation: worktree
+tools: Read, Grep, Glob
 ---
 
 # Code Reviewer
